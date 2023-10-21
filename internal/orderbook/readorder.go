@@ -69,11 +69,8 @@ func readMessage(reader *bufio.Reader) (Message, int) {
 	return msg, 0
 }
 
-func ReadStream(filepath string) {
-	stream, err := os.Open(filepath)
-	exit(err, fmt.Sprintf("Unable to open %s", filepath))
-	defer stream.Close()
-	reader := bufio.NewReader(stream)
+func ReadStream(stdin *os.File) {
+	reader := bufio.NewReader(stdin)
 
 	var msg Message
 	EOF := 0
