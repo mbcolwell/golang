@@ -36,7 +36,7 @@ func exit(err error, msg string) {
 	}
 }
 
-func readMessage(reader *bufio.Reader) (Message, int) {
+func ReadMessage(reader *bufio.Reader) (Message, int) {
 	var err error
 	var msg Message
 
@@ -49,13 +49,14 @@ func readMessage(reader *bufio.Reader) (Message, int) {
 	err = binary.Read(reader, binary.LittleEndian, &msg.Order)
 	exit(err, "Failed to read order type")
 
+	for i := 0; i < 3; i++ {
+		reader.ReadByte()
+	}
+
 	if msg.Header.MsgSize == 16 {
 		return msg, 0
 	}
 
-	for i := 0; i < 3; i++ {
-		reader.ReadByte()
-	}
 	err = binary.Read(reader, binary.LittleEndian, &msg.Size)
 	exit(err, "Failed to read order size")
 	if msg.Header.MsgSize == 24 {
@@ -76,7 +77,7 @@ func ReadStream(stdin *os.File) {
 	EOF := 0
 
 	for {
-		msg, EOF = readMessage(reader)
+		msg, EOF = ReadMessage(reader)
 		if EOF == 1 {
 			break
 		}

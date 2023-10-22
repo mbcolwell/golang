@@ -1,1 +1,2 @@
-internal/orderbook/input1.stream
+internal/orderbook/*.stream
+bin/*
