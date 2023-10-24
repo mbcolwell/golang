@@ -1,16 +1,16 @@
 package orderbook
 
-type priceVol struct {
+type PriceVol struct {
 	Price  int32
 	Volume uint64
 }
 
 type Ladder struct {
-	Depth  *[]priceVol
-	Orders map[uint64]priceVol
+	Depth  *[]PriceVol
+	Orders map[uint64]PriceVol
 }
 
-func bisectDepth(price int32, pv []priceVol) int {
+func BisectDepth(price int32, pv []PriceVol) int {
 	lo := 0
 	hi := len(pv)
 	for lo < hi {
@@ -25,20 +25,20 @@ func bisectDepth(price int32, pv []priceVol) int {
 }
 
 func addOrder(id uint64, price int32, volume uint64, ladder *Ladder) int {
-	(*ladder).Orders[id] = priceVol{Price: price, Volume: volume}
+	(*ladder).Orders[id] = PriceVol{Price: price, Volume: volume}
 	if len((*(*ladder).Depth)) == 0 {
-		(*(*ladder).Depth) = append((*(*ladder).Depth)[:], priceVol{Price: price, Volume: volume})
+		(*(*ladder).Depth) = append((*(*ladder).Depth)[:], PriceVol{Price: price, Volume: volume})
 		return 0
 	}
 
-	idx := bisectDepth(price, (*(*ladder).Depth))
+	idx := BisectDepth(price, (*(*ladder).Depth))
 	if idx == len((*(*ladder).Depth)) {
-		(*(*ladder).Depth) = append((*(*ladder).Depth), priceVol{Price: price, Volume: volume})
+		(*(*ladder).Depth) = append((*(*ladder).Depth), PriceVol{Price: price, Volume: volume})
 	} else if (*(*ladder).Depth)[idx].Price == price {
 		(*(*ladder).Depth)[idx].Volume += volume
 	} else if (*(*ladder).Depth)[idx].Price > price {
 		(*(*ladder).Depth) = append((*(*ladder).Depth)[:idx+1], (*(*ladder).Depth)[idx:]...)
-		(*(*ladder).Depth)[idx] = priceVol{Price: price, Volume: volume}
+		(*(*ladder).Depth)[idx] = PriceVol{Price: price, Volume: volume}
 	}
 	return idx
 }
@@ -62,7 +62,7 @@ func updateOrder(id uint64, price int32, volume uint64, ladder *Ladder, side byt
 
 func deleteOrder(id uint64, ladder *Ladder) int {
 	if existingOrder, ok := (*ladder).Orders[id]; ok {
-		idx := bisectDepth(existingOrder.Price, (*(*ladder).Depth))
+		idx := BisectDepth(existingOrder.Price, (*(*ladder).Depth))
 		if existingOrder.Volume == (*(*ladder).Depth)[idx].Volume {
 			if idx == len((*(*ladder).Depth))-1 {
 				(*(*ladder).Depth) = (*(*ladder).Depth)[:idx]
@@ -83,9 +83,9 @@ func executeOrder(id uint64, size uint64, ladder *Ladder) int {
 	if order.Volume == size {
 		return deleteOrder(id, ladder)
 	} else {
-		idx := bisectDepth(order.Price, (*(*ladder).Depth))
+		idx := BisectDepth(order.Price, (*(*ladder).Depth))
 		(*(*ladder).Depth)[idx].Volume -= size
-		(*ladder).Orders[id] = priceVol{Price: (*ladder).Orders[id].Price, Volume: ((*ladder).Orders[id].Volume - size)}
+		(*ladder).Orders[id] = PriceVol{Price: (*ladder).Orders[id].Price, Volume: ((*ladder).Orders[id].Volume - size)}
 		return idx
 	}
 }

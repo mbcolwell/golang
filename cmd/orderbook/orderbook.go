@@ -26,7 +26,7 @@ func main() {
 	}
 
 	var wrt io.Writer
-	out, err := os.OpenFile(*outputFile, os.O_RDWR|os.O_CREATE, 0666)
+	out, err := os.OpenFile(*outputFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		fmt.Printf("Error opening file: %v\n", err)
 		os.Exit(1)
@@ -58,5 +58,5 @@ func main() {
 				n, ticker, msg.Header.SeqNo, *book[ticker+"B"].Depth, *book[ticker+"S"].Depth))
 		}
 	}
-	log.Printf("Orderbook took %s\n", time.Since(start))
+	fmt.Printf("Orderbook took %s\n", time.Since(start))
 }

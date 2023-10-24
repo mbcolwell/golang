@@ -14,8 +14,8 @@ func ProcessMessage(n int, msg Message, book *map[string]Ladder) bool {
 		_, ok := (*book)[ticker+s]
 		if !ok {
 			var l Ladder
-			l.Depth = &[]priceVol{}
-			l.Orders = map[uint64]priceVol{}
+			l.Depth = &[]PriceVol{}
+			l.Orders = map[uint64]PriceVol{}
 			(*book)[ticker+s] = l
 		} else {
 			break // If one is created then both are
@@ -29,7 +29,7 @@ func ProcessMessage(n int, msg Message, book *map[string]Ladder) bool {
 	case "U":
 		return updateOrder(msg.Order.OrderId, msg.Price, msg.Size, &ladder, msg.Order.Side) < n
 	case "D":
-		idx := deleteOrder(msg.Order.OrderId, &ladder)  // Handling for deleting orders which had 0 size
+		idx := deleteOrder(msg.Order.OrderId, &ladder) // Handling for deleting orders which had 0 size
 		return 0 < idx && idx < n
 	case "E":
 		return executeOrder(msg.Order.OrderId, msg.Size, &ladder) < n
@@ -40,7 +40,7 @@ func ProcessMessage(n int, msg Message, book *map[string]Ladder) bool {
 	}
 }
 
-func FormatLadder(n int, ticker string, seqNo uint32, buySide []priceVol, sellSide []priceVol) string {
+func FormatLadder(n int, ticker string, seqNo uint32, buySide []PriceVol, sellSide []PriceVol) string {
 	str := fmt.Sprintf("%d, %s, [", seqNo, ticker)
 
 	buyLength := len(buySide)
