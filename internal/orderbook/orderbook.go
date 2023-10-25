@@ -25,14 +25,14 @@ func ProcessMessage(n int, msg Message, book *map[string]Ladder) bool {
 
 	switch string(msg.Order.MsgType) {
 	case "A":
-		return addOrder(msg.Order.OrderId, msg.Price, msg.Size, &ladder) < n
+		return AddOrder(msg.Order.OrderId, msg.Price, msg.Size, &ladder) < n
 	case "U":
-		return updateOrder(msg.Order.OrderId, msg.Price, msg.Size, &ladder, msg.Order.Side) < n
+		return UpdateOrder(msg.Order.OrderId, msg.Price, msg.Size, &ladder, msg.Order.Side) < n
 	case "D":
-		idx := deleteOrder(msg.Order.OrderId, &ladder) // Handling for deleting orders which had 0 size
+		idx := DeleteOrder(msg.Order.OrderId, &ladder) // Handling for deleting orders which had 0 size
 		return 0 < idx && idx < n
 	case "E":
-		return executeOrder(msg.Order.OrderId, msg.Size, &ladder) < n
+		return ExecuteOrder(msg.Order.OrderId, msg.Size, &ladder) < n
 	default:
 		fmt.Println("Unable to process order type")
 		os.Exit(1)

@@ -9,12 +9,12 @@ import (
 	"os"
 )
 
-type header struct {
+type Header struct {
 	SeqNo   uint32
 	MsgSize uint32
 }
 
-type order struct {
+type Order struct {
 	MsgType byte
 	Symbol  [3]byte
 	OrderId uint64
@@ -22,8 +22,8 @@ type order struct {
 }
 
 type Message struct {
-	Header header
-	Order  order
+	Header Header
+	Order  Order
 	Size   uint64
 	Price  int32
 }
