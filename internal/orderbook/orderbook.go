@@ -18,21 +18,21 @@ func ProcessMessage(n int, msg Message, book *map[string]Ladder) bool {
 			l.Orders = map[uint64]PriceVol{}
 			(*book)[ticker+s] = l
 		} else {
-			break // If one is created then both are
+			break // If one is already created then both must've been
 		}
 	}
 	ladder := (*book)[ticker+side]
 
 	switch string(msg.Order.MsgType) {
 	case "A":
-		return AddOrder(msg.Order.OrderId, msg.Price, msg.Size, &ladder) < n
+		return ladder.AddOrder(msg.Order.OrderId, msg.Price, msg.Size) < n
 	case "U":
-		return UpdateOrder(msg.Order.OrderId, msg.Price, msg.Size, &ladder, msg.Order.Side) < n
+		return ladder.UpdateOrder(msg.Order.OrderId, msg.Price, msg.Size, msg.Order.Side) < n
 	case "D":
-		idx := DeleteOrder(msg.Order.OrderId, &ladder) // Handling for deleting orders which had 0 size
+		idx := ladder.DeleteOrder(msg.Order.OrderId) // Handling for deleting orders which had 0 size
 		return 0 < idx && idx < n
 	case "E":
-		return ExecuteOrder(msg.Order.OrderId, msg.Size, &ladder) < n
+		return ladder.ExecuteOrder(msg.Order.OrderId, msg.Size) < n
 	default:
 		fmt.Println("Unable to process order type")
 		os.Exit(1)

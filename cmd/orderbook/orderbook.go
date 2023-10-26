@@ -54,8 +54,9 @@ func main() {
 
 		if orderbook.ProcessMessage(n, msg, &book) {
 			ticker := string(msg.Order.Symbol[:])
-			log.Println(orderbook.FormatLadder(
-				n, ticker, msg.Header.SeqNo, *book[ticker+"B"].Depth, *book[ticker+"S"].Depth))
+			log.Println(
+				orderbook.FormatLadder(n, ticker, msg.Header.SeqNo, *book[ticker+"B"].Depth, *book[ticker+"S"].Depth),
+			)
 		}
 	}
 	fmt.Printf("Orderbook took %s\n", time.Since(start))

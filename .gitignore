@@ -1,2 +1,3 @@
 internal/orderbook/*.stream
 bin/*
+*.log

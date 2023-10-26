@@ -90,18 +90,18 @@ func TestOrderLadder(t *testing.T) {
 				order := orders[orderIdx]
 				switch order.Order.MsgType {
 				case byte('A'):
-					idxResponse = orderbook.AddOrder(order.Order.OrderId, order.Price, order.Size, &l)
+					idxResponse = l.AddOrder(order.Order.OrderId, order.Price, order.Size)
 					break
 				case byte('U'):
-					idxResponse = orderbook.UpdateOrder(
-						order.Order.OrderId, order.Price, order.Size, &l, order.Order.Side,
+					idxResponse = l.UpdateOrder(
+						order.Order.OrderId, order.Price, order.Size, order.Order.Side,
 					)
 					break
 				case byte('D'):
-					idxResponse = orderbook.DeleteOrder(order.Order.OrderId, &l)
+					idxResponse = l.DeleteOrder(order.Order.OrderId)
 					break
 				case byte('E'):
-					idxResponse = orderbook.ExecuteOrder(order.Order.OrderId, order.Size, &l)
+					idxResponse = l.ExecuteOrder(order.Order.OrderId, order.Size)
 					break
 				}
 				idxResponses = append(idxResponses, idxResponse)

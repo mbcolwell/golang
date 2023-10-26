@@ -24,7 +24,7 @@ func BisectDepth(price int32, pv []PriceVol) int {
 	return lo
 }
 
-func AddOrder(id uint64, price int32, volume uint64, ladder *Ladder) int {
+func (ladder *Ladder) AddOrder(id uint64, price int32, volume uint64) int {
 	(*ladder).Orders[id] = PriceVol{Price: price, Volume: volume}
 	if len((*(*ladder).Depth)) == 0 {
 		(*(*ladder).Depth) = append((*(*ladder).Depth)[:], PriceVol{Price: price, Volume: volume})
@@ -43,11 +43,11 @@ func AddOrder(id uint64, price int32, volume uint64, ladder *Ladder) int {
 	return idx
 }
 
-func UpdateOrder(id uint64, price int32, volume uint64, ladder *Ladder, side byte) int {
+func (ladder *Ladder) UpdateOrder(id uint64, price int32, volume uint64, side byte) int {
 	var idx int
 	if _, ok := (*ladder).Orders[id]; ok {
-		idx1 := DeleteOrder(id, ladder)
-		idx2 := AddOrder(id, price, volume, ladder)
+		idx1 := ladder.DeleteOrder(id)
+		idx2 := ladder.AddOrder(id, price, volume)
 		if side == byte('B') {
 			return max(idx1, idx2)
 		} else {
@@ -55,12 +55,12 @@ func UpdateOrder(id uint64, price int32, volume uint64, ladder *Ladder, side byt
 		}
 
 	} else {
-		idx = AddOrder(id, price, volume, ladder) // Order was previously processed but had zero size
+		idx = ladder.AddOrder(id, price, volume) // Order was previously processed but had zero size
 	}
 	return idx
 }
 
-func DeleteOrder(id uint64, ladder *Ladder) int {
+func (ladder *Ladder) DeleteOrder(id uint64) int {
 	if existingOrder, ok := (*ladder).Orders[id]; ok {
 		idx := BisectDepth(existingOrder.Price, (*(*ladder).Depth))
 		if existingOrder.Volume == (*(*ladder).Depth)[idx].Volume {
@@ -78,10 +78,10 @@ func DeleteOrder(id uint64, ladder *Ladder) int {
 	return -1 // Order was never added before deletion (added with 0 size)
 }
 
-func ExecuteOrder(id uint64, size uint64, ladder *Ladder) int {
+func (ladder *Ladder) ExecuteOrder(id uint64, size uint64) int {
 	order, _ := (*ladder).Orders[id]
 	if order.Volume == size {
-		return DeleteOrder(id, ladder)
+		return ladder.DeleteOrder(id)
 	} else {
 		idx := BisectDepth(order.Price, (*(*ladder).Depth))
 		(*(*ladder).Depth)[idx].Volume -= size
