@@ -14,7 +14,8 @@ func ProcessMessage(n int, msg Message, book *map[string]Ladder) bool {
 		_, ok := (*book)[ticker+s]
 		if !ok {
 			var l Ladder
-			l.Depth = &[]PriceVol{}
+			d := make([]PriceVol, 0, 10)
+			l.Depth = &d
 			l.Orders = map[uint64]PriceVol{}
 			(*book)[ticker+s] = l
 		} else {

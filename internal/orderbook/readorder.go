@@ -84,3 +84,7 @@ func ReadStream(stdin *os.File) {
 		fmt.Println(msg)
 	}
 }
+
+func CreateOrder(seqNo uint32, msgType byte, symbol string, orderId uint64, side byte, size uint64, price int32) Message {
+	return Message{Header{0, seqNo}, Order{byte(msgType), [3]byte([]byte(symbol)), orderId, side}, size, price}
+}
