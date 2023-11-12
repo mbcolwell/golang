@@ -5,27 +5,30 @@ import (
 	"os"
 )
 
-func ProcessMessage(n int, msg Message, book *map[string]Ladder) bool {
+func ProcessMessage(n int, msg Message, book map[string]Ladder) bool {
 	ticker := string(msg.Order.Symbol[:])
 	side := string(msg.Order.Side)
 
 	// Initialise
 	for _, s := range []string{"B", "S"} {
-		_, ok := (*book)[ticker+s]
+		_, ok := book[ticker+s]
 		if !ok {
 			var l Ladder
 			d := make([]PriceVol, 0, 10)
 			l.Depth = &d
 			l.Orders = map[uint64]PriceVol{}
-			(*book)[ticker+s] = l
+			book[ticker+s] = l
 		} else {
 			break // If one is already created then both must've been
 		}
 	}
-	ladder := (*book)[ticker+side]
+	ladder := book[ticker+side]
 
 	switch string(msg.Order.MsgType) {
 	case "A":
+		if msg.Size == 0 {
+			return false
+		}
 		return ladder.AddOrder(msg.Order.OrderId, msg.Price, msg.Size) < n
 	case "U":
 		return ladder.UpdateOrder(msg.Order.OrderId, msg.Price, msg.Size, msg.Order.Side) < n

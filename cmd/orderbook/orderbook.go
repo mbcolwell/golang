@@ -52,7 +52,7 @@ func main() {
 			break
 		}
 
-		if orderbook.ProcessMessage(n, msg, &book) {
+		if orderbook.ProcessMessage(n, msg, book) {
 			ticker := string(msg.Order.Symbol[:])
 			log.Println(
 				orderbook.FormatLadder(n, ticker, msg.Header.SeqNo, *book[ticker+"B"].Depth, *book[ticker+"S"].Depth),
