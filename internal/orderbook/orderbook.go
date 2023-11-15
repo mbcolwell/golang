@@ -5,6 +5,13 @@ import (
 	"os"
 )
 
+func sideAwareIndex(i int, side byte, ladder Ladder) int {
+	if side == 'S' {
+		return i
+	}
+	return (len(*ladder.Depth)-1) - i
+}
+
 func ProcessMessage(n int, msg Message, book map[string]Ladder) bool {
 	ticker := string(msg.Order.Symbol[:])
 	side := string(msg.Order.Side)
@@ -24,24 +31,28 @@ func ProcessMessage(n int, msg Message, book map[string]Ladder) bool {
 	}
 	ladder := book[ticker+side]
 
+	var idx int
 	switch string(msg.Order.MsgType) {
 	case "A":
 		if msg.Size == 0 {
 			return false
 		}
-		return ladder.AddOrder(msg.Order.OrderId, msg.Price, msg.Size) < n
+		idx = ladder.AddOrder(msg.Order.OrderId, msg.Price, msg.Size)
 	case "U":
-		return ladder.UpdateOrder(msg.Order.OrderId, msg.Price, msg.Size, msg.Order.Side) < n
+		idx = ladder.UpdateOrder(msg.Order.OrderId, msg.Price, msg.Size, msg.Order.Side)
 	case "D":
-		idx := ladder.DeleteOrder(msg.Order.OrderId) // Handling for deleting orders which had 0 size
-		return 0 < idx && idx < n
+		idx = ladder.DeleteOrder(msg.Order.OrderId)
+		if idx < 0 {
+			return false // Handling for deleting orders which had 0 size
+		}
 	case "E":
-		return ladder.ExecuteOrder(msg.Order.OrderId, msg.Size) < n
+		idx = ladder.ExecuteOrder(msg.Order.OrderId, msg.Size)
 	default:
 		fmt.Println("Unable to process order type")
 		os.Exit(1)
 		return false // necessary to stop compiler from whining
 	}
+	return sideAwareIndex(idx, msg.Order.Side, ladder) < n
 }
 
 func FormatLadder(n int, ticker string, seqNo uint32, buySide []PriceVol, sellSide []PriceVol) string {
