@@ -1,8 +1,8 @@
-MAIN = orderbook
+MAIN = seed
 BIN = bin/
-CMD = cmd/orderbook/
-PIPE = cat internal/orderbook/input2.stream |
-ARGS = 5
+CMD = cmd/seed/
+PIPE = # cat internal/orderbook/input2.stream |
+ARGS = # 5
 
 
 all: build run
