@@ -19,8 +19,12 @@ func main() {
 	}
 
 	seeds, maps := seed.ReadInput(*input)
+	fmt.Printf("Took %s to read input\n", time.Since(start))
+	start = time.Now()
 
 	fmt.Printf("Lowest location number given the seed inputs: %d\n", seed.MinSeed(seeds, maps))
-
-	fmt.Printf("Seeds took %s\n", time.Since(start))
+	fmt.Printf("Took %s to do part 1\n", time.Since(start))
+	start = time.Now()
+	fmt.Printf("Lowest location number given the range seed inputs: %d\n", seed.MinSeedRange(seeds, maps))
+	fmt.Printf("Took %s to do part 2\n", time.Since(start))
 }
