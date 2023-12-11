@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/mbcolwell/golang/internal/seed"
+	"github.com/mbcolwell/golang/internal/adventofcode2023/seed"
 )
 
 func main() {
