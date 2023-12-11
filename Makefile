@@ -1,6 +1,6 @@
-MAIN = seed
+MAIN = day1
 BIN = bin/
-CMD = cmd/adventofcode2023/day5/
+CMD = cmd/adventofcode2023/day1/
 PIPE = # cat internal/orderbook/input2.stream |
 ARGS = # 5
 
