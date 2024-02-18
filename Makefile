@@ -1,4 +1,4 @@
-MAIN = urlshort
+MAIN = cyoa
 BIN = bin/
 CMD = cmd/
 PIPE = 
